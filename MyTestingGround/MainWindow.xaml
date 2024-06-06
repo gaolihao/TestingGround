@@ -9,5 +9,7 @@
     <StackPanel>
         <TextBlock Text="{Binding MyProperty}" />
         <Button Command="{Binding IncrementCommand}" Content="Increment" />
+        <TextBlock Text="{Binding s}" />
+        <Button Command="{Binding ExtractCommand}" Content="Esxt" />
     </StackPanel>
 </Window>
