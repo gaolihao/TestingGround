@@ -1,4 +1,4 @@
-﻿namespace TodoApi;
+﻿namespace MyApi;
 public class Todo
 {
     public int Id { get; set; }

@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using TodoApi;
+using MyApi;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoList"));
 builder.Services.AddControllers();
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("Todos"));
+//builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+//builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -68,5 +68,9 @@ app.MapDelete("/todoitems/{id}", async (int id, TodoDb db) =>
     return Results.NotFound();
 });
 */
+
+app.UseAuthorization();
+
+app.MapControllers();
 
 app.Run();
