@@ -10,13 +10,35 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.Wpf" Version="1.0.14" />
     <PackageReference Include="Fody" Version="6.8.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.6" />
-    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
-  </ItemGroup>
+    <PackageReference Include="OpenIddict.Client" Version="5.6.0" />
+    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />	  <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.AppServices">
+	  <Version>1.0.14</Version>
+	</PackageReference>
+      <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.Wpf">
+	  <Version>1.0.14</Version>
+	</PackageReference>
+    	  <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
+	  <Version>8.0.6</Version>
+	</PackageReference>
+    	  <PackageReference Include="OpenIddict.Client.SystemIntegration">
+	  <Version>5.6.0</Version>
+	</PackageReference>
+	<PackageReference Include="OpenIddict.Client.SystemNetHttp">
+	  <Version>5.6.0</Version>
+	</PackageReference>
+            <PackageReference Include="OpenIddict.Client.WebIntegration">
+	  <Version>5.6.0</Version>
+	</PackageReference>
+	<PackageReference Include="OpenIddict.EntityFrameworkCore">
+	  <Version>5.6.0</Version>
+	</PackageReference>
+          </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ClassLibrary\ClassLibrary.csproj" />

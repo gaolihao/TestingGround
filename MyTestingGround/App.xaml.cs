@@ -9,8 +9,10 @@ namespace MyTestingGround;
 /// </summary>
 public partial class App : Application
 {
+    
     protected override void OnStartup(StartupEventArgs e)
     {
+        /*
         base.OnStartup(e);
 
         var mainWindowViewModel = new MainViewModel();
@@ -21,7 +23,9 @@ public partial class App : Application
 
         MainWindow = mainWindow;
         MainWindow.Show();
+        */
 
     }
+    
 }
 

@@ -1,8 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using MyNamespace;
 using PropertyChanged;
 using System.ComponentModel;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Security.Claims;
+using System.Windows;
 
 namespace MyTestingGround;
 
@@ -10,6 +14,12 @@ namespace MyTestingGround;
 [AddINotifyPropertyChangedInterface]
 public partial class MainViewModel
 {
+    Client client;
+    public MainViewModel()
+    {
+        var httpClient = new HttpClient();
+        client = new MyNamespace.Client("http://localhost:5232/", httpClient);
+    }
     public int MyProperty { get; set; } = 1;
 
     [RelayCommand]
@@ -20,9 +30,26 @@ public partial class MainViewModel
     [RelayCommand]
     private async Task ExtractAsync()
     {
-        var httpClient = new HttpClient();
-        var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
-        var results = await client.TodoitemsAllAsync();
+        
+        var results = await client.TodoAllAsync();
         s = string.Join("\n", results.Select(todo => todo.Name));
     }
+    public string username { get; set; } = "";
+
+    [RelayCommand]
+    private async Task GetUsernameAsync()
+    {
+        var results = await client.UsernameAsync();
+        username = results.Value;
+    }
+
+
+    [RelayCommand]
+    private async Task AuthorizeAsync()
+    {
+
+        //var results = await client.LoginPOSTAsync(provider);
+        //s = string.Join("\n", results.Select(todo => todo.Name));
+    }
+
 }

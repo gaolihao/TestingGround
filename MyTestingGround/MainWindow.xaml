@@ -10,6 +10,10 @@
         <TextBlock Text="{Binding MyProperty}" />
         <Button Command="{Binding IncrementCommand}" Content="Increment" />
         <TextBlock Text="{Binding s}" />
-        <Button Command="{Binding ExtractCommand}" Content="Esxt" />
+        <Button Command="{Binding ExtractCommand}" Content="Extract" />
+        <TextBlock Text="{Binding username}" />
+        <Button Command="{Binding GetUsernameCommand}" Content="GetUsername" />
+        <Button Command="{Binding AuthorizeCommand}" Content="Authorize" />
+        <Button Name="LoginButton" Content="Log in using GitHub" HorizontalAlignment="Center" VerticalAlignment="Center" Click="LoginButton_Click" Height="64" Width="540" FontSize="20" />
     </StackPanel>
 </Window>
