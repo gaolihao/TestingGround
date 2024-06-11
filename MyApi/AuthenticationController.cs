@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -10,25 +11,18 @@ using OpenIddict.Abstractions;
 using OpenIddict.Client.AspNetCore;
 using OpenIddict.Server.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
+using static OpenIddict.Client.WebIntegration.OpenIddictClientWebIntegrationConstants;
 
-namespace Balosar.Server.Controllers;
+namespace MyApi;
 
 public class AuthenticationController : Controller
 {
-
-    /*
-    [HttpGet("github")]
-    [HttpPost("github")]
+    [HttpGet("~/callback/login/github")]
+    [HttpPost("~/callback/login/github")]
     public async Task<IActionResult> GithubLoginCallback()
     {
         // Resolve the claims extracted by OpenIddict from the userinfo response returned by GitHub.
-        var result = await HttpContext.AuthenticateAsync("GitHub");
-
-        if (!result.Succeeded || result.Principal == null)
-        {
-            // Handle the error appropriately
-            return BadRequest("Authentication failed.");
-        }
+        var result = await HttpContext.AuthenticateAsync(Providers.GitHub);
 
         var identity = new ClaimsIdentity(
             authenticationType: "ExternalLogin",
@@ -47,8 +41,8 @@ public class AuthenticationController : Controller
         return SignIn(new ClaimsPrincipal(identity), properties);
     }
 
-    [HttpGet]
-    [HttpPost]
+    [HttpGet("~/connect/authorize")]
+    [HttpPost("~/connect/authorize")]
     public async Task<IActionResult> Authorize()
     {
         // Resolve the claims stored in the cookie created after the GitHub authentication dance.
@@ -61,7 +55,7 @@ public class AuthenticationController : Controller
                 RedirectUri = Request.GetEncodedUrl()
             };
 
-            return Challenge(properties, "GitHub");
+            return Challenge(properties, Providers.GitHub);
         }
 
         var identifier = principal.FindFirst(ClaimTypes.NameIdentifier)!.Value;
@@ -73,15 +67,15 @@ public class AuthenticationController : Controller
             roleType: Claims.Role);
 
         // Import a few select claims from the identity stored in the local cookie.
-        identity.AddClaim(new Claim(OpenIddictConstants.Claims.Subject, identifier));
-        identity.AddClaim(new Claim(OpenIddictConstants.Claims.Name, identifier)
-            .SetDestinations(OpenIddictConstants.Destinations.AccessToken));
-        identity.AddClaim(new Claim(OpenIddictConstants.Claims.PreferredUsername, identifier)
-            .SetDestinations(OpenIddictConstants.Destinations.AccessToken));
+        identity.AddClaim(new Claim(Claims.Subject, identifier));
+        identity.AddClaim(new Claim(Claims.Name, identifier)
+            .SetDestinations(Destinations.AccessToken));
+        identity.AddClaim(new Claim(Claims.PreferredUsername, identifier)
+            .SetDestinations(Destinations.AccessToken));
 
         return SignIn(new ClaimsPrincipal(identity), properties: null, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
-    */
+    
 
     /*
     // Note: this controller uses the same callback action for all providers

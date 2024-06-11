@@ -34,16 +34,20 @@ public partial class MainWindow : Window, IWpfShell
     }
 
     static async Task<string> GetResourceAsync(string token, CancellationToken cancellationToken = default)
-    {
+    {   
+        
         var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
         var result = await client.UsernameAsync(cancellationToken);
 
         return result.Value;
+        
+        
         /*
         using var client = new HttpClient();
 
-        using var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:5232/api");
+        using var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:5232/username");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         using var response = await client.SendAsync(request, cancellationToken);

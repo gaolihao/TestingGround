@@ -20,6 +20,26 @@ public class Worker : IHostedService
         using var scope = _provider.CreateScope();
 
         var context = scope.ServiceProvider.GetRequiredService<DbContext>();
+        await context.Database.EnsureCreatedAsync();
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+}
+
+
+/*
+public class Worker : IHostedService
+{
+    private readonly IServiceProvider _provider;
+
+    public Worker(IServiceProvider provider)
+        => _provider = provider;
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        using var scope = _provider.CreateScope();
+
+        var context = scope.ServiceProvider.GetRequiredService<DbContext>();
         await context.Database.EnsureCreatedAsync(cancellationToken);
 
         // Create the registry entries necessary to handle URI protocol activations.
@@ -40,3 +60,4 @@ public class Worker : IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }
+*/

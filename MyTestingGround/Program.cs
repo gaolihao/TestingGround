@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MyTestingGround;
+using OpenIddict.Client;
 
 var host = new HostBuilder()
     // Note: applications for which a single instance is preferred can reference
@@ -18,7 +19,7 @@ var host = new HostBuilder()
     {
         services.AddDbContext<DbContext>(options =>
         {
-            options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-sorgan-wpf-client.sqlite3")}");
+            options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-mimban-client.sqlite3")}");
             options.UseOpenIddict();
         });
 
@@ -55,21 +56,13 @@ var host = new HostBuilder()
                 options.UseSystemNetHttp()
                        .SetProductInformation(typeof(Program).Assembly);
 
-                // Register the Web providers integrations.
-                //
-                // Note: to mitigate mix-up attacks, it's recommended to use a unique redirection endpoint
-                // address per provider, unless all the registered providers support returning an "iss"
-                // parameter containing their URL as part of authorization responses. For more information,
-                // see https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#section-4.4.
-                options.UseWebProviders()
-                       .AddGitHub(options =>
-                       {
-                           options.SetClientId("ddd9f6ccaaa4fc1373ed")
-                                  // Note: GitHub doesn't allow creating public clients and requires using a client secret.
-                                  .SetClientSecret("c1eecca319ca873d8a71f4cddd1467acea224c6e")
-                                  // Note: GitHub doesn't support the recommended ":/" syntax and requires using "://".
-                                  .SetRedirectUri("com.openiddict.sorgan.wpf.client://callback/login/github");
-                       });
+                options.AddRegistration(new OpenIddictClientRegistration
+                {
+                    Issuer = new Uri("https://localhost:5232/", UriKind.Absolute),
+
+                    ClientId = "console_app",
+                    RedirectUri = new Uri("/", UriKind.Relative)
+                });
             });
 
         // Register the worker responsible for creating the database used to store tokens
@@ -87,3 +80,21 @@ var host = new HostBuilder()
     .Build();
 
 await host.RunAsync();
+
+/*
+// Register the Web providers integrations.
+//
+// Note: to mitigate mix-up attacks, it's recommended to use a unique redirection endpoint
+// address per provider, unless all the registered providers support returning an "iss"
+// parameter containing their URL as part of authorization responses. For more information,
+// see https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#section-4.4.
+options.UseWebProviders()
+       .AddGitHub(options =>
+       {
+           options.SetClientId("ddd9f6ccaaa4fc1373ed")
+                  // Note: GitHub doesn't allow creating public clients and requires using a client secret.
+                  .SetClientSecret("c1eecca319ca873d8a71f4cddd1467acea224c6e")
+                  // Note: GitHub doesn't support the recommended ":/" syntax and requires using "://".
+                  .SetRedirectUri("com.openiddict.sorgan.wpf.client://callback/login/github");
+       });
+*/
