@@ -12,7 +12,7 @@ namespace MyTestingGround;
 
 
 [AddINotifyPropertyChangedInterface]
-public partial class MainViewModel
+public partial class MainViewModel: IMainViewModel
 {
     Client client;
     public MainViewModel()

@@ -25,11 +25,18 @@ public partial class MainWindow : Window, IWpfShell
 {
     private readonly OpenIddictClientService _service;
 
+    MainViewModel ViewModel => DataContext as MainViewModel ?? throw new InvalidOperationException("Can't cast");
+
     public MainWindow(OpenIddictClientService service)
     {
         DataContext = new MainViewModel();
         _service = service ?? throw new ArgumentNullException(nameof(service));
 
+        InitializeComponent();
+    }
+
+    public MainWindow()
+    {
         InitializeComponent();
     }
 
