@@ -15,6 +15,6 @@
         <TextBlock Text="{Binding username}" />
         <Button Command="{Binding GetUsernameCommand}" Content="GetUsername" />
         <Button Command="{Binding AuthorizeCommand}" Content="Authorize" />
-        <Button Name="LoginButton" Content="Log in using GitHub" HorizontalAlignment="Center" VerticalAlignment="Center" Click="LoginButton_Click" Height="64" Width="540" FontSize="20" />
+        <Button Command="{Binding LoginCommand}" Content="Log in using GitHub" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="540" FontSize="20" />
     </StackPanel>
 </Window>
