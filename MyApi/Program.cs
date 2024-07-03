@@ -23,6 +23,8 @@ using MyApi;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using static OpenIddict.Client.WebIntegration.OpenIddictClientWebIntegrationConstants;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -131,6 +133,7 @@ builder.Services.AddOpenIddict()
                {
                    options.SetClientId("c4ade52327b01ddacff3")
                           .SetClientSecret("da6bed851b75e317bf6b2cb67013679d9467c122")
+                         
                           .SetRedirectUri("callback/login/github");
                });
     })
