@@ -1,77 +1,45 @@
-using System.IO;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
-using OpenIddict.Server.AspNetCore;
-using OpenIddict.Validation.AspNetCore;
 using Quartz;
-using MyApi;
 using static OpenIddict.Abstractions.OpenIddictConstants;
-using static OpenIddict.Client.WebIntegration.OpenIddictClientWebIntegrationConstants;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Identity;
+using MyApi.Server.Data;
+using MyApi.Server.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
-builder.Services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("Todos"));
-//builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-//builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    // Configure the context to use sqlite.
+    options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-lalala4-server.sqlite3")}");
+
+    // Register the entity sets needed by OpenIddict.
+    // Note: use the generic overload if you need
+    // to replace the default OpenIddict entities.
+    options.UseOpenIddict();
+});
+
+// Register the Identity services.
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+// This replaces the default `SignInManager` with my custom one.
+//builder.Services.AddScoped<SignInManager<ApplicationUser>, ExternalClaimsSignInManager<ApplicationUser>>();
 
 /*
-builder.Services.AddOpenIddict()
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<DbContext>();
+*/
 
-            // Register the OpenIddict client components.
-            .AddClient(options =>
-            {
-                // Note: this sample uses the code flow, but you can enable the other flows if necessary.
-                options.AllowAuthorizationCodeFlow();
+//            .AddDefaultTokenProviders();
 
-                // Register the signing and encryption credentials used to protect
-                // sensitive data like the state tokens produced by OpenIddict.
-                options.AddDevelopmentEncryptionCertificate()
-                       .AddDevelopmentSigningCertificate();
 
-                // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
-                options.UseAspNetCore()
-                       .EnableStatusCodePagesIntegration()
-                       .EnableRedirectionEndpointPassthrough();
-
-                // Register the System.Net.Http integration and use the identity of the current
-                // assembly as a more specific user agent, which can be useful when dealing with
-                // providers that use the user agent as a way to throttle requests (e.g Reddit).
-                options.UseSystemNetHttp()
-                       .SetProductInformation(typeof(Startup).Assembly);
-
-                // Register the Web providers integrations.
-                //
-                // Note: to mitigate mix-up attacks, it's recommended to use a unique redirection endpoint
-                // URI per provider, unless all the registered providers support returning a special "iss"
-                // parameter containing their URL as part of authorization responses. For more information,
-                // see https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#section-4.4.
-                options.UseWebProviders()
-                       .AddGitHub(options =>
-                       {
-                           options.SetClientId("c4ade52327b01ddacff3")
-                                  .SetClientSecret("da6bed851b75e317bf6b2cb67013679d9467c122")
-                                  .SetRedirectUri("callback/login/github");
-                       });
-            });
+/*
+services.AddIdentity<IdentityUser, Role>().AddEntityFrameworkStores<Context>();
 */
 
 // OpenIddict offers native integration with Quartz.NET to perform scheduled tasks
@@ -83,22 +51,27 @@ builder.Services.AddQuartz(options =>
     options.UseInMemoryStore();
 });
 
+builder.Services.AddControllers();
+
 // Register the Quartz.NET service and configure it to block shutdown until jobs are complete.
 builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
 
+/*
 builder.Services.AddDbContext<DbContext>(options =>
 {
     options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-mimban-server.sqlite3")}");
     options.UseOpenIddict();
 });
+*/
+
+var secret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
 
 builder.Services.AddOpenIddict()
 
     // Register the OpenIddict core components.
     .AddCore(options =>
     {
-        options.UseEntityFrameworkCore()
-               .UseDbContext<DbContext>();
+        options.UseEntityFrameworkCore().UseDbContext<ApplicationDbContext>();
     })
 
     // Register the OpenIddict client components.
@@ -126,15 +99,16 @@ builder.Services.AddOpenIddict()
         //
         // Note: to mitigate mix-up attacks, it's recommended to use a unique redirection endpoint
         // URI per provider, unless all the registered providers support returning a special "iss"
-        // parameter containing their URL as part of authorization responses. For more information,
+        // parameter containing their URL as part of authorization responses. For more information, .SetAuthority("https://login.microsoftonline.com/zomp")
         // see https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics#section-4.4.
+        
         options.UseWebProviders()
-               .AddGitHub(options =>
+               .AddMicrosoft(options =>
                {
-                   options.SetClientId("c4ade52327b01ddacff3")
-                          .SetClientSecret("da6bed851b75e317bf6b2cb67013679d9467c122")
-                         
-                          .SetRedirectUri("callback/login/github");
+                   options.SetClientId("776890c9-6376-42df-9fa3-1393af84e01b")
+                          .SetClientSecret("")
+                          .SetRedirectUri("callback/login/microsoft");
+                          //.SetTenant("consumers"
                });
     })
 
@@ -142,8 +116,8 @@ builder.Services.AddOpenIddict()
     .AddServer(options =>
     {
         // Enable the authorization and token endpoints.
-        options.SetAuthorizationEndpointUris("authorize")
-               .SetTokenEndpointUris("token");
+        options.SetAuthorizationEndpointUris("connect/authorize")
+               .SetTokenEndpointUris("connect/token");
 
         // Note: this sample only uses the authorization code flow but you can enable
         // the other flows if you need to support implicit, password or client credentials.
@@ -153,6 +127,14 @@ builder.Services.AddOpenIddict()
         options.AddDevelopmentEncryptionCertificate()
                .AddDevelopmentSigningCertificate();
 
+        //options.SetTokenEndpointUris("/connect/token");
+
+        // Enable the password flow.
+        options.AllowPasswordFlow();
+
+        // Accept anonymous clients (i.e clients that don't send a client_id).
+        options.AcceptAnonymousClients();
+
         // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
         //
         // Note: unlike other samples, this sample doesn't use token endpoint pass-through
@@ -161,7 +143,9 @@ builder.Services.AddOpenIddict()
         // resolved from the authorization code to produce access and identity tokens.
         //
         options.UseAspNetCore()
-               .EnableAuthorizationEndpointPassthrough();
+               .EnableAuthorizationEndpointPassthrough()
+               .DisableTransportSecurityRequirement()
+               .EnableTokenEndpointPassthrough();
     })
 
     // Register the OpenIddict validation components.
@@ -174,30 +158,32 @@ builder.Services.AddOpenIddict()
         options.UseAspNetCore();
     });
 
+
 builder.Services.AddAuthorization()
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.StatusCode = 401;
+        return Task.CompletedTask;
+    };
+});
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
 var app = builder.Build();
 
-// app.UseHttpsRedirection();
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-else
-{
-    app.UseHttpsRedirection();
-}
+app.UseHttpsRedirection();
 
-/*
 // Create a new application registration matching the values configured in Mimban.Client.
 // Note: in a real world application, this step should be part of a setup script.
 await using (var scope = app.Services.CreateAsyncScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<DbContext>();
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await context.Database.EnsureCreatedAsync();
 
     var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
@@ -218,54 +204,31 @@ await using (var scope = app.Services.CreateAsyncScope())
                 Permissions.Endpoints.Authorization,
                 Permissions.Endpoints.Token,
                 Permissions.GrantTypes.AuthorizationCode,
-                Permissions.ResponseTypes.Code
+                Permissions.ResponseTypes.Code,
             }
         });
     }
 }
-*/
 
-// Create a new application registration matching the values configured in Mimban.Client.
-// Note: in a real world application, this step should be part of a setup script.
-await using (var scope = app.Services.CreateAsyncScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<DbContext>();
-    await context.Database.EnsureCreatedAsync();
-
-    var manager = scope.ServiceProvider.GetRequiredService<IOpenIddictApplicationManager>();
-
-    if (await manager.FindByClientIdAsync("console_app") == null)
-    {
-        await manager.CreateAsync(new OpenIddictApplicationDescriptor
-        {
-            ApplicationType = ApplicationTypes.Native,
-            ClientId = "console_app",
-            ClientType = ClientTypes.Public,
-            RedirectUris =
-            {
-                new Uri("http://localhost/")
-            },
-            Permissions =
-            {
-                Permissions.Endpoints.Authorization,
-                Permissions.Endpoints.Token,
-                Permissions.GrantTypes.AuthorizationCode,
-                Permissions.ResponseTypes.Code
-            }
-        });
-    }
-}
+app.UseBlazorFrameworkFiles();
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapRazorPages();
+app.MapControllers();
+
 /*
-app.MapGet("api", [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
-(ClaimsPrincipal user) => user.Identity!.Name);
+app.MapGet("api1", [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+    (ClaimsPrincipal user) =>
+{
+    return user.Identity!.Name;
+});
+*/
 
-
-
-app.MapMethods("callback/login/github", [HttpMethods.Get, HttpMethods.Post], async (HttpContext context) =>
+/*
+app.MapMethods("callback/login/github2", [HttpMethods.Get, HttpMethods.Post], async (HttpContext context) =>
 {
     // Resolve the claims extracted by OpenIddict from the userinfo response returned by GitHub.
     var result = await context.AuthenticateAsync(Providers.GitHub);
@@ -286,8 +249,10 @@ app.MapMethods("callback/login/github", [HttpMethods.Get, HttpMethods.Post], asy
     // authentication options shouldn't be used, a specific scheme can be specified here.
     return Results.SignIn(new ClaimsPrincipal(identity), properties);
 });
+*/
 
-app.MapMethods("authorize", [HttpMethods.Get, HttpMethods.Post], async (HttpContext context) =>
+/*
+app.MapMethods("authorize123", [HttpMethods.Get, HttpMethods.Post], async (HttpContext context) =>
 {
     // Resolve the claims stored in the cookie created after the GitHub authentication dance.
     // If the principal cannot be found, trigger a new challenge to redirect the user to GitHub.
@@ -322,83 +287,4 @@ app.MapMethods("authorize", [HttpMethods.Get, HttpMethods.Post], async (HttpCont
 });
 */
 
-
-app.MapControllers();
-
 app.Run();
-
-
-
-//var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-/*
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-else
-{
-    app.UseHttpsRedirection();
-}
-*/
-
-//app.Run();
-
-/*
-app.MapGet("/todoitems", async (TodoDb db) =>
-    await db.Todos.ToListAsync());
-
-app.MapGet("/todoitems/complete", async (TodoDb db) =>
-    await db.Todos.Where(t => t.IsComplete).ToListAsync());
-
-app.MapGet("/todoitems/{id}", async (int id, TodoDb db) =>
-    await db.Todos.FindAsync(id)
-        is Todo todo
-            ? Results.Ok(todo)
-            : Results.NotFound());
-
-app.MapPost("/todoitems", async (Todo todo, TodoDb db) =>
-{
-    db.Todos.Add(todo);
-    await db.SaveChangesAsync();
-
-    return Results.Created($"/todoitems/{todo.Id}", todo);
-});
-
-app.MapPut("/todoitems/{id}", async (int id, Todo inputTodo, TodoDb db) =>
-{
-    var todo = await db.Todos.FindAsync(id);
-
-    if (todo is null) return Results.NotFound();
-
-    todo.Name = inputTodo.Name;
-    todo.IsComplete = inputTodo.IsComplete;
-
-    await db.SaveChangesAsync();
-
-    return Results.NoContent();
-});
-
-app.MapDelete("/todoitems/{id}", async (int id, TodoDb db) =>
-{
-    if (await db.Todos.FindAsync(id) is Todo todo)
-    {
-        db.Todos.Remove(todo);
-        await db.SaveChangesAsync();
-        return Results.NoContent();
-    }
-
-    return Results.NotFound();
-});
-*/
-
-/*
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
-
-*/
