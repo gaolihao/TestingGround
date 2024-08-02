@@ -10,11 +10,13 @@ public record Username(string value);
 
 public class UserNameController : Controller
 {
+    /*
     [HttpGet("username")]
     [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     public Task<ActionResult<Username>> GetUserName()
     {
         var userName = User.Identity!.Name;
-        return new userName;
+        return new Username("");
     }
+    */
 }
