@@ -42,7 +42,7 @@ public partial class App : Application
             {
                 services.AddDbContext<DbContext>(options =>
                 {
-                    options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-mimban-client.sqlite3")}");
+                    options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-mimban20-client.sqlite3")}");
                     options.UseOpenIddict();
                 });
 

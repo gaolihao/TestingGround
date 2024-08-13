@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Windows;
 using OpenIddict.Client;
 using System.Net.Http.Headers;
+using System.Threading;
 
 namespace MyTestingGround;
 
@@ -34,8 +35,8 @@ public partial class MainViewModel : IMainViewModel
     private async Task ExtractAsync()
     {
 
-        var results = await client.TodoAllAsync();
-        s = string.Join("\n", results.Select(todo => todo.Name));
+        //var results = await client.TodoAllAsync();
+        //s = string.Join("\n", results.Select(todo => todo.Name));
     }
     public string username { get; set; } = "";
     public OpenIddictClientService Service { get; }
@@ -43,8 +44,12 @@ public partial class MainViewModel : IMainViewModel
     [RelayCommand]
     private async Task GetUsernameAsync()
     {
-        var results = await client.UsernameAsync();
-        username = results.Value;
+        //var results = await GetResourceAsync();
+        //username = results.Value;
+        var httpClient = new HttpClient();
+        var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
+        var result = await client.UsernameAsync();
+        username = result.ToString();
     }
 
 
@@ -64,7 +69,7 @@ public partial class MainViewModel : IMainViewModel
         var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
         var result = await client.UsernameAsync(cancellationToken);
 
-        return result.Value;
+        return result.ToString();
 
 
         /*

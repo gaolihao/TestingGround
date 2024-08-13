@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     // Configure the context to use sqlite.
-    options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-lalala4-server.sqlite3")}");
+    options.UseSqlite($"Filename={Path.Combine(Path.GetTempPath(), "openiddict-lalala20-server.sqlite3")}");
 
     // Register the entity sets needed by OpenIddict.
     // Note: use the generic overload if you need
@@ -106,7 +106,7 @@ builder.Services.AddOpenIddict()
                .AddMicrosoft(options =>
                {
                    options.SetClientId("776890c9-6376-42df-9fa3-1393af84e01b")
-                          .SetClientSecret("")
+                          .SetClientSecret(secret)
                           .SetRedirectUri("callback/login/microsoft");
                           //.SetTenant("consumers"
                });
@@ -174,10 +174,21 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+else
+{
+    app.UseHttpsRedirection();
+}
+
+//app.UseHttpsRedirection();
 
 // Create a new application registration matching the values configured in Mimban.Client.
 // Note: in a real world application, this step should be part of a setup script.
@@ -210,7 +221,6 @@ await using (var scope = app.Services.CreateAsyncScope())
     }
 }
 
-app.UseBlazorFrameworkFiles();
 app.UseRouting();
 
 app.UseAuthentication();

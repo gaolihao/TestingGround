@@ -15,12 +15,12 @@ public record Username(string value);
 
 [ApiController]
 //[Route("[controller]")]
-[Authorize(Roles = "Signin2,Signin,Writers")]
+//[Authorize(Roles = "Signin2,Signin,Writers")]
 [Route("userinfo")]
 public class UserNameController : Controller
 {
     [HttpGet("usernameid")]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     public Task<ActionResult<string>> GetUserName()
     {
         var identity = (ClaimsIdentity)User.Identity!;
@@ -38,23 +38,24 @@ public class UserNameController : Controller
 
 
     [HttpGet("username")]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
-    public Task<ActionResult<string>> GetUserNameId()
+    //[Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+    public Task<ActionResult<int>> GetUserNameId()
     {
         var identity = (ClaimsIdentity)User.Identity!;
         var claims = User.Claims;
-        var userName = identity.FindFirst("Name")!.Value;
+        //var userName = identity.FindFirst("Name")!.Value;
+        var userName = 2;
 
-        if (string.IsNullOrEmpty(userName))
-        {
-            return Task.FromResult<ActionResult<string>>(("User name not found."));
-        }
-        return Task.FromResult<ActionResult<string>>((userName ?? ""));
+        //if (string.IsNullOrEmpty(userName))
+        //{
+        //    return Task.FromResult<ActionResult<string>>(("User name not found."));
+        //}
+        return Task.FromResult<ActionResult<int>>((userName));
 
     }
 
     [HttpGet("email")]
-    [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     public Task<ActionResult<string>> GetEmail()
     {
         var identity = (ClaimsIdentity)User.Identity!;

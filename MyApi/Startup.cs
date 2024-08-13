@@ -1,6 +1,6 @@
 using System.IO;
-using Mimban.Server.Data;
-using Mimban.Server.Models;
+using MyApi.Server.Data;
+using MyApi.Server.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Quartz;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
-namespace Mimban.Server;
+namespace MyApi.Server;
 
 public class Startup
 {
@@ -37,7 +37,7 @@ public class Startup
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-        services.AddScoped<SignInManager<ApplicationUser>, ExternalClaimsSignInManager<ApplicationUser>>();
+        //services.AddScoped<SignInManager<ApplicationUser>, ExternalClaimsSignInManager<ApplicationUser>>();
 
         //    .AddDefaultUI();
 
