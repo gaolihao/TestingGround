@@ -7,6 +7,12 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 using Microsoft.AspNetCore.Identity;
 using MyApi.Server.Data;
 using MyApi.Server.Models;
+using MyApi.Hubs;
+using MyApi.ConnectionHandlers;
+using MyApi.Server;
+using SignalRSamples.Hubs;
+using System.Reflection;
+using System.Text.Json;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -175,6 +181,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -228,6 +235,56 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();
+
+
+JsonWriterOptions _jsonWriterOptions = new JsonWriterOptions { Indented = true };
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<Chat>("/default");
+
+    endpoints.MapConnectionHandler<MessagesConnectionHandler>("/chat");
+
+    endpoints.MapGet("/deployment", async context =>
+    {
+        var attributes = Assembly.GetAssembly(typeof(Startup)).GetCustomAttributes<AssemblyMetadataAttribute>();
+
+        context.Response.ContentType = "application/json";
+        await using (var writer = new Utf8JsonWriter(context.Response.BodyWriter, _jsonWriterOptions))
+        {
+            writer.WriteStartObject();
+            var commitHash = string.Empty;
+
+            foreach (var attribute in attributes)
+            {
+                writer.WriteString(attribute.Key, attribute.Value);
+
+                if (string.Equals(attribute.Key, "CommitHash"))
+                {
+                    commitHash = attribute.Value;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(commitHash))
+            {
+                writer.WriteString("GitHubUrl", $"https://github.com/aspnet/SignalR/commit/{commitHash}");
+            }
+
+            writer.WriteEndObject();
+            await writer.FlushAsync();
+        }
+    });
+});
+
+//app.MapHub<ChatHub>("chatHub");
+/*
+app.MapSignalR();
+
+app.UseEndpoints(routes =>
+{
+    routes.MapHub<TestHub>("/testhub");
+});
+*/
 
 /*
 app.MapGet("api1", [Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]

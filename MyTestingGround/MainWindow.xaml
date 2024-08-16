@@ -16,5 +16,31 @@
         <Button Command="{Binding GetUsernameCommand}" Content="GetUsername" />
         <Button Command="{Binding AuthorizeCommand}" Content="Authorize" />
         <Button Command="{Binding LoginCommand}" Content="Log in using GitHub" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="540" FontSize="20" />
+        <Grid>
+            <Button
+            x:Name="btnConnect"
+            Width="75"
+            Margin="321,115,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Click="connectButton_Click"
+            Content="Connect" />
+            <ListBox
+            x:Name="messagesList"
+            Width="386"
+            Height="100"
+            Margin="10,10,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top" />
+            <Label
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="ConnectionId:" Margin="10,112,0,0" />
+            <TextBlock
+            x:Name="tbMain"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Text="Not Connected" Margin="94,117,0,0" />
+        </Grid>
     </StackPanel>
 </Window>
