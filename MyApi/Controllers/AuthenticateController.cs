@@ -2,20 +2,12 @@
 using System.Security.Claims;
 using static OpenIddict.Client.WebIntegration.OpenIddictClientWebIntegrationConstants;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.IdentityModel.Tokens;
-using static OpenIddict.Abstractions.OpenIddictConstants;
-using OpenIddict.Server.AspNetCore;
-using Microsoft.AspNetCore.Http.Extensions;
 using OpenIddict.Abstractions;
-using Polly;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore;
 using OpenIddict.Client.AspNetCore;
 using MyApi.Server.Models;
-using Microsoft.AspNetCore.Authorization;
-using System.Collections.Immutable;
 
-namespace Mimban.Server.Controllers;
+namespace MyApi.Server.Controllers;
 
 [ApiController]
 //[Route("[controller]")]

@@ -17,6 +17,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.6" />
+    <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
     <PackageReference Include="OpenIddict.Client" Version="5.6.0" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />	  <PackageReference Include="Dapplo.Microsoft.Extensions.Hosting.AppServices">
 	  <Version>1.0.14</Version>

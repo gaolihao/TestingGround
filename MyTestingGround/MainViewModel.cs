@@ -9,7 +9,12 @@ using System.Security.Claims;
 using System.Windows;
 using OpenIddict.Client;
 using System.Net.Http.Headers;
-using System.Threading;
+using Microsoft.AspNetCore.Connections;
+using Microsoft.AspNetCore.Http.Connections.Client;
+using System.IO.Pipelines;
+using System.IO;
+using System.Text;
+using System.Windows.Interop;
 
 namespace MyTestingGround;
 
@@ -83,6 +88,101 @@ public partial class MainViewModel : IMainViewModel
 
         return await response.Content.ReadAsStringAsync(cancellationToken);
         */
+    }
+
+    public IEnumerable<int> features { get; set; } = [];
+
+    public string featuresS => string.Join(",", features.ToArray());
+
+    [RelayCommand]
+    private async Task GetFeaturesAsync()
+    {
+        features = await client.FeaturesAsync();
+    }
+
+    [RelayCommand]
+    private async Task AddFeatureAsync()
+    {
+        await client.FeatureAsync(1);
+    }
+    [RelayCommand]
+    private async Task ConnectAsync()
+    {
+        var baseUrl = "http://localhost:5232/chat";
+        Console.WriteLine($"Connecting to {baseUrl}...");
+
+        var connectionOptions = new HttpConnectionOptions
+        {
+            Url = new Uri(baseUrl),
+            DefaultTransferFormat = TransferFormat.Text,
+        };
+
+        var connection = new HttpConnection(connectionOptions, loggerFactory: null);
+
+        try
+        {
+            await connection.StartAsync();
+
+            Console.WriteLine($"Connected to {baseUrl}");
+            var shutdown = new TaskCompletionSource<object>();
+            Console.CancelKeyPress += (sender, a) =>
+            {
+                a.Cancel = true;
+                shutdown.TrySetResult(null);
+            };
+
+            _ = ReceiveLoop(connection.Transport.Input);
+            //_ = SendLoop(Console.In, connection.Transport.Output);
+
+            await shutdown.Task;
+        }
+        catch (AggregateException aex) when (aex.InnerExceptions.All(e => e is OperationCanceledException))
+        {
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        finally
+        {
+            await connection.DisposeAsync();
+        }
+    }
+
+    public string msg { get; set; } = "";
+    private async Task ReceiveLoop(PipeReader input)
+    {
+        while (true)
+        {
+            var result = await input.ReadAsync();
+            var buffer = result.Buffer;
+
+            try
+            {
+                if (!buffer.IsEmpty)
+                {
+                    var s = Encoding.UTF8.GetString(buffer);
+                    msg = s;
+                }
+                else if (result.IsCompleted)
+                {
+                    // No more data, and the pipe is complete
+                    break;
+                }
+            }
+            finally
+            {
+                input.AdvanceTo(buffer.End);
+            }
+        }
+    }
+
+    private static async Task SendLoop(TextReader input, PipeWriter output)
+    {
+        while (true)
+        {
+            var result = await input.ReadLineAsync();
+            await output.WriteAsync(Encoding.UTF8.GetBytes(result));
+        }
     }
 
     [RelayCommand]

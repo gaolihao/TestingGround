@@ -61,6 +61,7 @@ public partial class MainWindow : Window
     private async void BtnConnect_Click(object sender, RoutedEventArgs e)
     {
 
+        /*
         connection.On<string>("Connected",
                                (connectionid) =>
                                {
@@ -88,13 +89,14 @@ public partial class MainWindow : Window
         {
             messagesList.Items.Add(ex.Message);
         }
+        */
     }
 
     private async void connectButton_Click(object sender, RoutedEventArgs e)
     {
         connection.On<string, string>("ReceiveMessage", (user, message) =>
         {
-            this.Dispatcher.Invoke(() =>
+            this.Dispatcher.Invoke(() =>                                                                                                                                                                                                                                                                                                                      
             {
                 var newMessage = $"{user}: {message}";
                 messagesList.Items.Add(newMessage);

@@ -1,12 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using OpenIddict.Abstractions;
-using OpenIddict.Validation.AspNetCore;
-using System.Reflection.Metadata;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static OpenIddict.Client.WebIntegration.OpenIddictClientWebIntegrationConstants;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 namespace MyApi.Server;
 

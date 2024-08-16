@@ -16,6 +16,8 @@
         <Button Command="{Binding GetUsernameCommand}" Content="GetUsername" />
         <Button Command="{Binding AuthorizeCommand}" Content="Authorize" />
         <Button Command="{Binding LoginCommand}" Content="Log in using GitHub" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="540" FontSize="20" />
+
+
         <Grid>
             <Button
             x:Name="btnConnect"
@@ -42,5 +44,15 @@
             VerticalAlignment="Top"
             Text="Not Connected" Margin="94,117,0,0" />
         </Grid>
+
+
+        <TextBlock Text="{Binding featuresS}" />
+        <Button Command="{Binding GetFeaturesCommand}" Content="Get Features" />
+        <Button Command="{Binding AddFeatureCommand}" Content="Add Feature" />
+        <Button Command="{Binding ConnectCommand}" Content="Connect to Server" />
+        <TextBlock Text="{Binding msg}" />
+
+
+
     </StackPanel>
 </Window>
