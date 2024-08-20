@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Authentication;
 using OpenIddict.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Client.AspNetCore;
-using MyApi.Server.Models;
+using MyApi.Models;
 
-namespace MyApi.Server.Controllers;
+namespace MyApi.Controllers;
 
 [ApiController]
 //[Route("[controller]")]

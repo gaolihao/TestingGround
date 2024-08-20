@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MyApi.Models;
 using MyApi.Data;
 using Microsoft.AspNetCore.SignalR;
 using MyApi.Hubs;
-namespace MyApi.Server;
+namespace MyApi.Controllers;
 
 
 [ApiController]
@@ -31,5 +30,4 @@ public class FeatureController : Controller
         _hubContext.Clients.All.SendAsync("Send", Database.features);
         return Task.FromResult<ActionResult>(Ok());
     }
-
 }

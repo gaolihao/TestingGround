@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Http.Extensions;
 using OpenIddict.Abstractions;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Identity;
-using MyApi.Server.Models;
+using MyApi.Models;
 
-namespace Mimban.Server.Controllers;
+namespace MyApi.Controllers;
 
 [ApiController]
 public class AuthorizeController : ControllerBase

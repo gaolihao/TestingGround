@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using static OpenIddict.Abstractions.OpenIddictConstants;
-namespace MyApi.Server;
+namespace MyApi.Controllers;
 
 
 public record Username(string value);

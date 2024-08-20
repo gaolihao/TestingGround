@@ -5,12 +5,9 @@ using OpenIddict.Abstractions;
 using Quartz;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using Microsoft.AspNetCore.Identity;
-using MyApi.Server.Data;
-using MyApi.Server.Models;
+using MyApi.Data;
+using MyApi.Models;
 using MyApi.Hubs;
-using MyApi.ConnectionHandlers;
-using MyApi.Server;
-using System.Reflection;
 using System.Text.Json;
 
 

@@ -1,8 +1,8 @@
-﻿using MyApi.Server.Models;
+﻿using MyApi.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace MyApi.Server.Data;
+namespace MyApi.Data;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
