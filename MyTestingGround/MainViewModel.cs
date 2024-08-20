@@ -19,9 +19,6 @@ public partial class MainViewModel : IMainViewModel
     public MainViewModel(IHubClient hubClient)
     {
         this.hubClient = hubClient;
-        //var httpClient = new HttpClient();
-        //client = new MyNamespace.Client("http://localhost:5232/", httpClient);
-        //Service = service;
     }
     public int MyProperty { get; set; } = 1;
 
@@ -88,7 +85,10 @@ public partial class MainViewModel : IMainViewModel
     {
         var httpClient = new HttpClient();
         var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
-        await client.FeatureAsync(1);
+        await client.FeatureAsync(MyProperty);
+
+        // Get features
+        features = await client.FeaturesAsync();
     }
 
     [RelayCommand]

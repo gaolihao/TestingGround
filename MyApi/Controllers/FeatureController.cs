@@ -16,7 +16,6 @@ public class FeatureController : Controller
     }
 
     [HttpGet("features")]
-    //[Authorize(AuthenticationSchemes = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)]
     public List<int> Get()
     {
         return Database.features;
