@@ -10,7 +10,6 @@ using MyApi.Server.Models;
 using MyApi.Hubs;
 using MyApi.ConnectionHandlers;
 using MyApi.Server;
-using SignalRSamples.Hubs;
 using System.Reflection;
 using System.Text.Json;
 
@@ -239,6 +238,10 @@ app.MapControllers();
 
 JsonWriterOptions _jsonWriterOptions = new JsonWriterOptions { Indented = true };
 
+app.MapHub<ChatHub>("/default");
+//app.MapConnectionHandler<MessagesConnectionHandler>("/chat");
+
+/*
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapHub<Chat>("/default");
@@ -275,6 +278,7 @@ app.UseEndpoints(endpoints =>
         }
     });
 });
+*/
 
 //app.MapHub<ChatHub>("chatHub");
 /*

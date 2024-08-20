@@ -25,7 +25,6 @@
             Margin="321,115,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Click="connectButton_Click"
             Content="Connect" />
             <ListBox
             x:Name="messagesList"
@@ -50,6 +49,7 @@
         <Button Command="{Binding GetFeaturesCommand}" Content="Get Features" />
         <Button Command="{Binding AddFeatureCommand}" Content="Add Feature" />
         <Button Command="{Binding ConnectCommand}" Content="Connect to Server" />
+        <Button Command="{Binding DisconnectCommand}" Content="DisConnect to Server" />
         <TextBlock Text="{Binding msg}" />
 
 

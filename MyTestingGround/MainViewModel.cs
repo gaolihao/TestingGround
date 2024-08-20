@@ -1,20 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using MyNamespace;
 using PropertyChanged;
-using System.ComponentModel;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Security.Claims;
 using System.Windows;
 using OpenIddict.Client;
 using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Connections;
-using Microsoft.AspNetCore.Http.Connections.Client;
 using System.IO.Pipelines;
 using System.IO;
 using System.Text;
-using System.Windows.Interop;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using MyTestingGround.Services;
 
 namespace MyTestingGround;
 
@@ -22,12 +19,15 @@ namespace MyTestingGround;
 [AddINotifyPropertyChangedInterface]
 public partial class MainViewModel : IMainViewModel
 {
-    Client client;
-    public MainViewModel(OpenIddictClientService service)
+
+    IHubClient hubClient;
+
+    public MainViewModel(IHubClient hubClient)
     {
-        var httpClient = new HttpClient();
-        client = new MyNamespace.Client("http://localhost:5232/", httpClient);
-        Service = service;
+        this.hubClient = hubClient;
+        //var httpClient = new HttpClient();
+        //client = new MyNamespace.Client("http://localhost:5232/", httpClient);
+        //Service = service;
     }
     public int MyProperty { get; set; } = 1;
 
@@ -92,23 +92,176 @@ public partial class MainViewModel : IMainViewModel
 
     public IEnumerable<int> features { get; set; } = [];
 
-    public string featuresS => string.Join(",", features.ToArray());
+    public string featuresS => "Feature Data: " + string.Join(",", features.ToArray());
 
     [RelayCommand]
     private async Task GetFeaturesAsync()
     {
+        var httpClient = new HttpClient();
+        var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
         features = await client.FeaturesAsync();
     }
 
     [RelayCommand]
     private async Task AddFeatureAsync()
     {
+        var httpClient = new HttpClient();
+        var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
         await client.FeatureAsync(1);
     }
+
     [RelayCommand]
     private async Task ConnectAsync()
     {
-        var baseUrl = "http://localhost:5232/chat";
+        hubClient.ConnectHub(ValidateInput, UpdateLog);
+    }
+
+    [RelayCommand]
+    private async Task DisconnectAsync()
+    {
+        hubClient.DisconnectHub();
+    }
+
+    public string msg { get; set; } = "";
+    public void ValidateInput(List<int> input)
+    {
+        features = input;
+    }
+
+    public void UpdateLog(string message)
+    {
+        msg += message + "\n";
+    }
+
+    /*
+    private async Task<int> ExecuteAsync()
+    {
+        var uri = "http://localhost:5232/default";
+
+        msg += ("Connecting to {0}", uri);
+
+        var connectionBuilder = new HubConnectionBuilder();
+
+        connectionBuilder.Services.Configure<LoggerFilterOptions>(options =>
+        {
+            options.MinLevel = LogLevel.Trace;
+        });
+
+        connectionBuilder.WithUrl(uri);
+
+        connectionBuilder.WithAutomaticReconnect();
+
+        using var closedTokenSource = new CancellationTokenSource();
+        var connection = connectionBuilder.Build();
+
+        try
+        {
+            
+            Console.CancelKeyPress += (sender, a) =>
+            {
+                a.Cancel = true;
+                closedTokenSource.Cancel();
+                connection.StopAsync().GetAwaiter().GetResult();
+            };
+            
+
+            // Set up handler
+            connection.On<string>("Send", ValidateInput);
+
+            
+            connection.Closed += e =>
+            {
+                Console.WriteLine("Connection closed...");
+                closedTokenSource.Cancel();
+                return Task.CompletedTask;
+            };
+            
+
+            if (!await ConnectAsync(connection, closedTokenSource.Token))
+            {
+                //Console.WriteLine("Failed to establish a connection to '{0}' because the CancelKeyPress event fired first. Exiting...", uri);
+                return 0;
+            }
+
+            msg += ("Connected to {0}", uri);
+
+            while (true)
+            {
+
+            }
+
+            // Handle the connected connection
+            
+            while (true)
+            {
+                // If the underlying connection closes while waiting for user input, the user will not observe
+                // the connection close aside from "Connection closed..." being printed to the console. That's
+                // because cancelling Console.ReadLine() is a royal pain.
+                 var line = Console.ReadLine();
+
+                if (line == null || closedTokenSource.Token.IsCancellationRequested)
+                {
+                    Console.WriteLine("Exiting...");
+                    break;
+                }
+
+                try
+                {
+                    await connection.InvokeAsync<object>("Send", "C#", line);
+                }
+                catch when (closedTokenSource.IsCancellationRequested)
+                {
+                    // We're shutting down the client
+                    Console.WriteLine("Failed to send '{0}' because the CancelKeyPress event fired first. Exiting...", line);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    // Send could have failed because the connection closed
+                    // Continue to loop because we should be reconnecting.
+                    Console.WriteLine(ex);
+                }
+            }
+            
+            
+        }
+        finally
+        {
+            await connection.StopAsync();
+        }
+
+        return 0;
+    }
+
+    private static async Task<bool> ConnectAsync(HubConnection connection, CancellationToken token)
+    {
+        // Keep trying to until we can start
+        while (true)
+        {
+            try
+            {
+                await connection.StartAsync(token);
+                return true;
+            }
+            catch when (token.IsCancellationRequested)
+            {
+                return false;
+            }
+            catch
+            {
+                Console.WriteLine("Failed to connect, trying again in 5000(ms)");
+
+                await Task.Delay(5000);
+            }
+        }
+    }
+*/
+
+
+    /*
+    private async Task ConnectsAsync()
+    {
+        var baseUrl = "http://localhost:5232/default";
         Console.WriteLine($"Connecting to {baseUrl}...");
 
         var connectionOptions = new HttpConnectionOptions
@@ -123,13 +276,9 @@ public partial class MainViewModel : IMainViewModel
         {
             await connection.StartAsync();
 
-            Console.WriteLine($"Connected to {baseUrl}");
+            //Console.WriteLine($"Connected to {baseUrl}");
             var shutdown = new TaskCompletionSource<object>();
-            Console.CancelKeyPress += (sender, a) =>
-            {
-                a.Cancel = true;
-                shutdown.TrySetResult(null);
-            };
+            
 
             _ = ReceiveLoop(connection.Transport.Input);
             //_ = SendLoop(Console.In, connection.Transport.Output);
@@ -146,9 +295,11 @@ public partial class MainViewModel : IMainViewModel
         {
             await connection.DisposeAsync();
         }
-    }
 
-    public string msg { get; set; } = "";
+    }
+    */
+
+    /*
     private async Task ReceiveLoop(PipeReader input)
     {
         while (true)
@@ -184,6 +335,8 @@ public partial class MainViewModel : IMainViewModel
             await output.WriteAsync(Encoding.UTF8.GetBytes(result));
         }
     }
+    */
+
 
     [RelayCommand]
     private async Task LoginAsync()

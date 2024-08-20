@@ -48,6 +48,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        /*
         connection = new HubConnectionBuilder()
                 .WithUrl("https://localhost:5232/TestHub")
                 .Build();
@@ -56,6 +57,7 @@ public partial class MainWindow : Window
             await Task.Delay(new Random().Next(0, 5) * 1000);
             await connection.StartAsync();
         };
+        */
     }
 
     private async void BtnConnect_Click(object sender, RoutedEventArgs e)
@@ -92,6 +94,7 @@ public partial class MainWindow : Window
         */
     }
 
+    /*
     private async void connectButton_Click(object sender, RoutedEventArgs e)
     {
         connection.On<string, string>("ReceiveMessage", (user, message) =>
@@ -118,7 +121,7 @@ public partial class MainWindow : Window
 
     private async void sendButton_Click(object sender, RoutedEventArgs e)
     {
-        /*
+        
         try
         {
             await connection.InvokeAsync("SendMessage",
@@ -128,6 +131,7 @@ public partial class MainWindow : Window
         {
             messagesList.Items.Add(ex.Message);
         }
-        */
+        
     }
+*/
 }

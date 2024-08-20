@@ -14,6 +14,7 @@ using OpenIddict.Client;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Navigation;
+using MyTestingGround.Services;
 
 namespace MyTestingGround;
 
@@ -38,6 +39,7 @@ public partial class App : Application
                 builder.AddJsonFile("app.settings.json", optional: true, reloadOnChange: true)
                         .AddEnvironmentVariables();
             })
+            
             .ConfigureServices((context, services) =>
             {
                 services.AddDbContext<DbContext>(options =>
@@ -46,6 +48,7 @@ public partial class App : Application
                     options.UseOpenIddict();
                 });
 
+                /*
                 services.AddOpenIddict()
 
                     // Register the OpenIddict core components.
@@ -82,12 +85,13 @@ public partial class App : Application
                         // Add a client registration matching the client application definition in the server project.
                         options.AddRegistration(new OpenIddictClientRegistration
                         {
-                            Issuer = new Uri("https://localhost:5232/", UriKind.Absolute),
+                            Issuer = new Uri("https://localhost:5232", UriKind.Absolute),
 
                             ClientId = "console_app",
                             RedirectUri = new Uri("/", UriKind.Relative)
                         });
                     });
+            */
 
                 // Register the worker responsible for creating the database used to store tokens
                 // and adding the registry entries required to register the custom URI scheme.
@@ -98,9 +102,11 @@ public partial class App : Application
                 //services.AddSingleton((Application)this);
                 //services.AddSingleton<MainWindow>();
                 services.AddSingleton<IMainViewModel, MainViewModel>();
+                services.AddSingleton<IHubClient, HubClient>();
 
                 // Register the background service responsible for handling the console interactions.
             })
+         
             .Build();
 
         //PowerPointHelper.Initilize();

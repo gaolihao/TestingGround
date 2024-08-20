@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyApi.Models;
 using MyApi.Data;
-using SignalRSamples.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using MyApi.Hubs;
 namespace MyApi.Server;
@@ -10,9 +9,9 @@ namespace MyApi.Server;
 [ApiController]
 public class FeatureController : Controller
 {
-    IHubContext<Chat> _hubContext;
+    IHubContext<ChatHub> _hubContext;
 
-    public FeatureController(IHubContext<Chat> hubcontext)
+    public FeatureController(IHubContext<ChatHub> hubcontext)
     {
         _hubContext = hubcontext;
     }
@@ -29,7 +28,7 @@ public class FeatureController : Controller
     public Task<ActionResult> Post([FromBody] int feature)
     {
         Database.features.Add(feature);
-        _hubContext.send
+        _hubContext.Clients.All.SendAsync("Send", Database.features);
         return Task.FromResult<ActionResult>(Ok());
     }
 
