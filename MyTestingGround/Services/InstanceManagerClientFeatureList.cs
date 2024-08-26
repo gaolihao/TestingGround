@@ -4,9 +4,10 @@ using System.Threading.Channels;
 using Grpc.Core;
 using MyApi.Contract;
 using System.Windows.Threading;
+using MyTestingGround.Services;
 
 namespace MyApi.Services;
-class InstanceManagerClientFeatureList
+class InstanceManagerClientFeatureList : IInstanceManagerClientFeatureList
 {
     private readonly ISynchronizedFeatureListService client;
     private readonly ILogger<InstanceManagerClientFeatureList> logger;

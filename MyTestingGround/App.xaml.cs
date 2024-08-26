@@ -100,11 +100,24 @@ public partial class App : Application
                 // Note: in a real world application, this step should be part of a setup script.
 
                 services.AddHostedService<Worker>();
-                //services.AddSingleton((Application)this);
-                //services.AddSingleton<MainWindow>();
                 services.AddSingleton<IMainViewModel, MainViewModel>();
                 services.AddSingleton<IHubClient, HubClient>();
                 services.AddSingleton<IInstanceManagerClientFeatureList, InstanceManagerClientFeatureList>();
+                /*
+                services.AddGrpcClient<ISynchronizedScrollingService>((sp, o) =>
+                {
+                    var socketConfiguration = sp.GetRequiredService<IOptions<SocketConfiguration>>().Value;
+                    var baseUrl = "http://localhost";
+
+                    var address = Shared.CanUseUnixSockets
+                        ? baseUrl
+                        : baseUrl + ":" + socketConfiguration.HttpPort;
+                    o.Address = new Uri(address);
+                })
+                    //.AddPolicyHandler(RetryForeverPolicy)
+                    .ConfigureChannel(ConfigureChannel)
+                    .ConfigureCodeFirstGrpcClient<ISynchronizedScrollingService>();
+                */
 
                 // Register the background service responsible for handling the console interactions.
             })

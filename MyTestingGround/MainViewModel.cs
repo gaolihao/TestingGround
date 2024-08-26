@@ -16,10 +16,22 @@ public partial class MainViewModel : IMainViewModel
 
     IHubClient hubClient;
 
-    public MainViewModel(IHubClient hubClient)
+    IInstanceManagerClientFeatureList instanceManagerClient;
+
+    
+    public MainViewModel(IHubClient hubClient, IInstanceManagerClientFeatureList instanceManagerClientFeatureList)
     {
         this.hubClient = hubClient;
     }
+    
+
+    /*
+    public MainViewModel(IInstanceManagerClientFeatureList instanceManagerClient, IHubClient hubClient)
+    {
+        this.instanceManagerClient = instanceManagerClient;
+        this.hubClient = hubClient;
+    }
+    */
     public int MyProperty { get; set; } = 1;
 
     [RelayCommand]

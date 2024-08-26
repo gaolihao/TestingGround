@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MyTestingGround" d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
         DataContext="{Binding Main, Source={StaticResource Locator}}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800">
+        Title="MainWindow" Height="800" Width="800">
     <StackPanel>
         <TextBlock Text="{Binding MyProperty}" />
         <Button Command="{Binding IncrementCommand}" Content="Increment" />
@@ -17,34 +17,15 @@
         <Button Command="{Binding AuthorizeCommand}" Content="Authorize" />
         <Button Command="{Binding LoginCommand}" Content="Log in using GitHub" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="540" FontSize="20" />
 
+        <TextBlock Text="SignalR example" />
+        <TextBlock Text="{Binding featuresS}" />
+        <Button Command="{Binding GetFeaturesCommand}" Content="Get Features" />
+        <Button Command="{Binding AddFeatureCommand}" Content="Add Feature" />
+        <Button Command="{Binding ConnectCommand}" Content="Connect to Server" />
+        <Button Command="{Binding DisconnectCommand}" Content="DisConnect to Server" />
+        <TextBlock Text="{Binding msg}" />
 
-        <Grid>
-            <Button
-            x:Name="btnConnect"
-            Width="75"
-            Margin="321,115,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="Connect" />
-            <ListBox
-            x:Name="messagesList"
-            Width="386"
-            Height="100"
-            Margin="10,10,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top" />
-            <Label
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="ConnectionId:" Margin="10,112,0,0" />
-            <TextBlock
-            x:Name="tbMain"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Text="Not Connected" Margin="94,117,0,0" />
-        </Grid>
-
-
+        <TextBlock Text="GRPC example" />
         <TextBlock Text="{Binding featuresS}" />
         <Button Command="{Binding GetFeaturesCommand}" Content="Get Features" />
         <Button Command="{Binding AddFeatureCommand}" Content="Add Feature" />
