@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Navigation;
 using MyTestingGround.Services;
+using MyApi.Services;
 
 namespace MyTestingGround;
 
@@ -103,6 +104,7 @@ public partial class App : Application
                 //services.AddSingleton<MainWindow>();
                 services.AddSingleton<IMainViewModel, MainViewModel>();
                 services.AddSingleton<IHubClient, HubClient>();
+                services.AddSingleton<IInstanceManagerClientFeatureList, InstanceManagerClientFeatureList>();
 
                 // Register the background service responsible for handling the console interactions.
             })

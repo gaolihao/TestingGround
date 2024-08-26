@@ -44,6 +44,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ClassLibrary\ClassLibrary.csproj" />
+	  <ProjectReference Include="..\MyApi.Contract\MyApi.Contract.csproj" />
   </ItemGroup>
 
 </Project>

@@ -17,6 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.27.3" />
+    <PackageReference Include="Grpc.Core" Version="2.46.6" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
@@ -36,9 +38,19 @@
     <PackageReference Include="OpenIddict.Quartz" Version="5.6.0" />
     <PackageReference Include="OpenIddict.Server.AspNetCore" Version="5.6.0" />
     <PackageReference Include="OpenIddict.Validation.AspNetCore" Version="5.6.0" />
+    <PackageReference Include="protobuf-net.BuildTools" Version="3.2.33">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="protobuf-net.Grpc" Version="1.1.1" />
+    <PackageReference Include="Protobuf.Grpc" Version="1.0.170" />
     <PackageReference Include="Quartz" Version="3.9.0" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.9.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MyApi.Contract\MyApi.Contract.csproj" />
+	</ItemGroup>
 
 </Project>
