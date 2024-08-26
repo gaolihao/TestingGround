@@ -6,6 +6,8 @@ using System.Windows;
 using OpenIddict.Client;
 using System.Net.Http.Headers;
 using MyTestingGround.Services;
+using Microsoft.Extensions.Logging;
+using MyApi.Contract;
 
 namespace MyTestingGround;
 
@@ -22,6 +24,7 @@ public partial class MainViewModel : IMainViewModel
     public MainViewModel(IHubClient hubClient, IInstanceManagerClientFeatureList instanceManagerClientFeatureList)
     {
         this.hubClient = hubClient;
+        instanceManagerClient = instanceManagerClientFeatureList;
     }
     
 
@@ -124,6 +127,23 @@ public partial class MainViewModel : IMainViewModel
     public void UpdateLog(string message)
     {
         msg += message + "\n";
+    }
+
+    private async void FeatureListUpdated(FeatureList featureList)
+    {
+        features = featureList.features;
+    }
+
+    [RelayCommand]
+    private async Task ConnectGRPCAsync()
+    {
+        instanceManagerClient.Connect(FeatureListUpdated);
+    }
+
+    [RelayCommand]
+    private async Task DisconnectGRPCAsync()
+    {
+
     }
 
 

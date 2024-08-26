@@ -9,6 +9,9 @@ using MyApi.Data;
 using MyApi.Models;
 using MyApi.Hubs;
 using System.Text.Json;
+using MyApi.Services;
+using ProtoBuf.Grpc.Server;
+using MyApi;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -179,6 +182,11 @@ builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
+//builder.WebHost.ConfigureKestrel(SocketSetup.Execute);
+builder.Services.AddGrpc();
+builder.Services.AddCodeFirstGrpc();
+builder.Services.AddSingleton<SynchronizedFeatureListRepository>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -225,6 +233,7 @@ await using (var scope = app.Services.CreateAsyncScope())
 }
 
 app.UseRouting();
+app.MapGrpcService<SynchronizedFeatureListService>();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -235,7 +244,7 @@ app.MapControllers();
 
 JsonWriterOptions _jsonWriterOptions = new JsonWriterOptions { Indented = true };
 
-app.MapHub<ChatHub>("/default");
+//app.MapHub<ChatHub>("/default");
 //app.MapConnectionHandler<MessagesConnectionHandler>("/chat");
 
 /*

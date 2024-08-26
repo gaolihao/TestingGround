@@ -13,7 +13,7 @@ public class SocketConfiguration
     /// <summary>
     /// Gets or sets the port number when unix sockets are not supported.
     /// </summary>
-    public int HttpPort { get; set; }
+    public int HttpPort { get; set; } = 5232;
 
     /// <summary>
     /// Gets or sets a value indicating whether data should be reported to the instance manager.

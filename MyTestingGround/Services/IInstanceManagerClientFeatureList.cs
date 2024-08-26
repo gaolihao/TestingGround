@@ -9,7 +9,7 @@ namespace MyTestingGround.Services;
 public interface IInstanceManagerClientFeatureList
 {
     Task<IDictionary<int, AttachableProcess>> GetProcessesAsync();
-    void Connect(string filename, Action<FeatureList> locationUpdatedByServer);
+    void Connect(Action<FeatureList> locationUpdatedByServer);
     void ReportLocation(FeatureList location);
     Task SubscribeAsync(int processId);
     void Disconnect();

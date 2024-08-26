@@ -6,7 +6,6 @@ using System.IO;
 using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.EventLog;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +15,10 @@ using System.Runtime.CompilerServices;
 using System.Windows.Navigation;
 using MyTestingGround.Services;
 using MyApi.Services;
+using Grpc.Core;
+using ProtoBuf.Grpc.ClientFactory;
+using MyApi.Contract;
+using Microsoft.Extensions.Options;
 
 namespace MyTestingGround;
 
@@ -103,21 +106,20 @@ public partial class App : Application
                 services.AddSingleton<IMainViewModel, MainViewModel>();
                 services.AddSingleton<IHubClient, HubClient>();
                 services.AddSingleton<IInstanceManagerClientFeatureList, InstanceManagerClientFeatureList>();
-                /*
-                services.AddGrpcClient<ISynchronizedScrollingService>((sp, o) =>
+                
+                
+                services.AddGrpcClient<ISynchronizedFeatureListService>((sp, o) =>
                 {
                     var socketConfiguration = sp.GetRequiredService<IOptions<SocketConfiguration>>().Value;
                     var baseUrl = "http://localhost";
 
-                    var address = Shared.CanUseUnixSockets
-                        ? baseUrl
-                        : baseUrl + ":" + socketConfiguration.HttpPort;
+                    var address = baseUrl + ":" + socketConfiguration.HttpPort;
                     o.Address = new Uri(address);
                 })
                     //.AddPolicyHandler(RetryForeverPolicy)
                     .ConfigureChannel(ConfigureChannel)
-                    .ConfigureCodeFirstGrpcClient<ISynchronizedScrollingService>();
-                */
+                    .ConfigureCodeFirstGrpcClient<ISynchronizedFeatureListService>();
+                
 
                 // Register the background service responsible for handling the console interactions.
             })
@@ -153,6 +155,29 @@ public partial class App : Application
             throw new InvalidOperationException(error);
         }
         return res;
+    }
+
+    private static void ConfigureChannel(IServiceProvider serviceProvider, Grpc.Net.Client.GrpcChannelOptions opt)
+    {
+        var methodConfig = new Grpc.Net.Client.Configuration.MethodConfig
+        {
+            Names = { Grpc.Net.Client.Configuration.MethodName.Default },
+            RetryPolicy = new Grpc.Net.Client.Configuration.RetryPolicy
+            {
+                MaxAttempts = 5,
+                InitialBackoff = TimeSpan.FromSeconds(0.5),
+                MaxBackoff = TimeSpan.FromSeconds(10),
+                BackoffMultiplier = 1.5,
+                RetryableStatusCodes = { StatusCode.Unavailable }
+            }
+        };
+
+        opt.MaxRetryAttempts = null;
+
+        opt.ServiceConfig = new Grpc.Net.Client.Configuration.ServiceConfig
+        {
+            MethodConfigs = { methodConfig }
+        };
     }
 }
 

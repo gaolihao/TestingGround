@@ -17,20 +17,18 @@
         <Button Command="{Binding AuthorizeCommand}" Content="Authorize" />
         <Button Command="{Binding LoginCommand}" Content="Log in using GitHub" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="540" FontSize="20" />
 
-        <TextBlock Text="SignalR example" />
         <TextBlock Text="{Binding featuresS}" />
         <Button Command="{Binding GetFeaturesCommand}" Content="Get Features" />
         <Button Command="{Binding AddFeatureCommand}" Content="Add Feature" />
-        <Button Command="{Binding ConnectCommand}" Content="Connect to Server" />
-        <Button Command="{Binding DisconnectCommand}" Content="DisConnect to Server" />
+
+        <TextBlock Text="SignalR example" />
+        <Button Command="{Binding ConnectCommand}" Content="Connect to SignalR Server" />
+        <Button Command="{Binding DisconnectCommand}" Content="DisConnect to SignalR Server" />
         <TextBlock Text="{Binding msg}" />
 
         <TextBlock Text="GRPC example" />
-        <TextBlock Text="{Binding featuresS}" />
-        <Button Command="{Binding GetFeaturesCommand}" Content="Get Features" />
-        <Button Command="{Binding AddFeatureCommand}" Content="Add Feature" />
-        <Button Command="{Binding ConnectCommand}" Content="Connect to Server" />
-        <Button Command="{Binding DisconnectCommand}" Content="DisConnect to Server" />
+        <Button Command="{Binding ConnectGRPCCommand}" Content="Connect to GRPC Server" />
+        <Button Command="{Binding DisconnectGRPCCommand}" Content="DisConnect to GRPC Server" />
         <TextBlock Text="{Binding msg}" />
 
 

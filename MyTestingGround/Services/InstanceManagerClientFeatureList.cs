@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using System.Threading.Channels;
 using Grpc.Core;
 using MyApi.Contract;
-using System.Windows.Threading;
 using MyTestingGround.Services;
 
 namespace MyApi.Services;
@@ -48,7 +47,7 @@ class InstanceManagerClientFeatureList : IInstanceManagerClientFeatureList
         ctsInstanceManager = new CancellationTokenSource();
     }
 
-    public void Connect(string filename, Action<FeatureList> locationUpdatedByServer)
+    public void Connect(Action<FeatureList> locationUpdatedByServer)
     {
         if (socketConfiguration.IsDisabled)
             return;
@@ -62,8 +61,8 @@ class InstanceManagerClientFeatureList : IInstanceManagerClientFeatureList
                 {
                     var options = new ConnectMessageHeaderFeatureList().ToCallOptions(ct);
 
-
-                    await foreach (var location in client.ConnectAsync(locations.Reader.ReadAllAsync(ct), options).WithCancellation(ct))
+                    var c = client.ConnectAsync(locations.Reader.ReadAllAsync(ct), options).WithCancellation(ct);
+                    await foreach (var location in c)
                     {
                         locationUpdatedByServer(location);
                     }

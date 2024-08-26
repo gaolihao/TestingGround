@@ -9,12 +9,12 @@ public class FeatureList
 {
     public FeatureList() { }
 
-    public FeatureList(Guid Id) 
+    public FeatureList(List<int> features) 
     { 
-        this.Id = Id;
+        this.features = features;
     }
 
-    public Guid Id { get; set; }
+    public List<int> features { get; set; }
 
     public MessageType MessageType { get; init; }
 }
