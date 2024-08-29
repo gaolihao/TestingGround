@@ -16,6 +16,7 @@ using MyApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     // Configure the context to use sqlite.

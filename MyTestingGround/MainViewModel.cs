@@ -8,6 +8,8 @@ using System.Net.Http.Headers;
 using MyTestingGround.Services;
 using Microsoft.Extensions.Logging;
 using MyApi.Contract;
+using Grpc.Net.Client;
+using MyApi.Services;
 
 namespace MyTestingGround;
 
@@ -21,10 +23,11 @@ public partial class MainViewModel : IMainViewModel
     IInstanceManagerClientFeatureList instanceManagerClient;
 
     
-    public MainViewModel(IHubClient hubClient, IInstanceManagerClientFeatureList instanceManagerClientFeatureList)
+    public MainViewModel(IInstanceManagerClientFeatureList instanceManagerClientFeatureList)
     {
-        this.hubClient = hubClient;
+        //this.hubClient = hubClient;
         instanceManagerClient = instanceManagerClientFeatureList;
+
     }
     
 
@@ -109,13 +112,28 @@ public partial class MainViewModel : IMainViewModel
     [RelayCommand]
     private async Task ConnectAsync()
     {
+        
         hubClient.ConnectHub(ValidateInput, UpdateLog);
+        
+
+
     }
 
     [RelayCommand]
     private async Task DisconnectAsync()
     {
         hubClient.DisconnectHub();
+
+        /*
+        var handler = new HttpClientHandler();
+        handler.ServerCertificateCustomValidationCallback =
+            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+        var httpClient = new HttpClient(handler) { Timeout = Timeout.InfiniteTimeSpan };
+        var channel = GrpcChannel.ForAddress("https://localhost:7204",
+            new GrpcChannelOptions { HttpClient = httpClient });
+        var client = new InstanceManagerClientFeatureList(channel);
+        */
     }
 
     public string msg { get; set; } = "";
