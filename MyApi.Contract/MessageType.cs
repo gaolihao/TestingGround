@@ -10,10 +10,11 @@ public enum MessageType
     /// <summary>
     /// Location message.
     /// </summary>
-    Feature,
+    Location,
 
     /// <summary>
     /// unsubscribe message.
     /// </summary>
     Unsubscribe,
 }
+

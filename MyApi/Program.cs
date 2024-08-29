@@ -183,10 +183,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
-//builder.WebHost.ConfigureKestrel(SocketSetup.Execute);
+builder.WebHost.ConfigureKestrel(SocketSetup.Execute);
 builder.Services.AddGrpc();
 builder.Services.AddCodeFirstGrpc();
-builder.Services.AddSingleton<SynchronizedFeatureListRepository>();
+builder.Services.AddSingleton<SynchronizedScrollingRepository>();
 
 var app = builder.Build();
 
@@ -234,7 +234,7 @@ await using (var scope = app.Services.CreateAsyncScope())
 }
 
 app.UseRouting();
-app.MapGrpcService<SynchronizedFeatureListService>();
+app.MapGrpcService<SynchronizedScrollingService>();
 
 app.UseAuthentication();
 app.UseAuthorization();

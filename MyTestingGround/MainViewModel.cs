@@ -20,10 +20,10 @@ public partial class MainViewModel : IMainViewModel
 
     IHubClient hubClient;
 
-    IInstanceManagerClientFeatureList instanceManagerClient;
+    IInstanceManagerClient instanceManagerClient;
 
     
-    public MainViewModel(IInstanceManagerClientFeatureList instanceManagerClientFeatureList)
+    public MainViewModel(IInstanceManagerClient instanceManagerClientFeatureList)
     {
         //this.hubClient = hubClient;
         instanceManagerClient = instanceManagerClientFeatureList;
@@ -93,7 +93,10 @@ public partial class MainViewModel : IMainViewModel
     [RelayCommand]
     private async Task GetFeaturesAsync()
     {
-        var httpClient = new HttpClient();
+        var httpClient = new HttpClient()
+        {
+            Version = new Version(2, 0)
+        };
         var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
         features = await client.FeaturesAsync();
     }
@@ -101,22 +104,24 @@ public partial class MainViewModel : IMainViewModel
     [RelayCommand]
     private async Task AddFeatureAsync()
     {
-        var httpClient = new HttpClient();
+        var httpClient = new HttpClient()
+        {
+            DefaultRequestVersion = new Version(2, 0)
+        };
         var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
         await client.FeatureAsync(MyProperty);
 
         // Get features
         features = await client.FeaturesAsync();
+
+        instanceManagerClient.ReportLocation(new(MyProperty));
     }
 
     [RelayCommand]
     private async Task ConnectAsync()
     {
-        
         hubClient.ConnectHub(ValidateInput, UpdateLog);
         
-
-
     }
 
     [RelayCommand]
@@ -147,21 +152,21 @@ public partial class MainViewModel : IMainViewModel
         msg += message + "\n";
     }
 
-    private async void FeatureListUpdated(FeatureList featureList)
+    private async void FeatureListUpdated(Location featureList)
     {
-        features = featureList.features;
+        features.Append((int)featureList.WeldIdFine);
     }
 
     [RelayCommand]
     private async Task ConnectGRPCAsync()
     {
-        instanceManagerClient.Connect(FeatureListUpdated);
+        instanceManagerClient.Connect("", FeatureListUpdated);
     }
 
     [RelayCommand]
     private async Task DisconnectGRPCAsync()
     {
-
+        instanceManagerClient.Disconnect();
     }
 
 

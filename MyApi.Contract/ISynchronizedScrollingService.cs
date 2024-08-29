@@ -4,12 +4,11 @@ using Grpc.Core;
 using ProtoBuf;
 using ProtoBuf.Grpc.Configuration;
 
-
 /// <summary>
 /// Interface for synchronized scrolling service.
 /// </summary>
 [Service]
-public interface ISynchronizedFeatureListService
+public interface ISynchronizedScrollingService
 {
     /// <summary>
     /// Connects NoviView to Instance Manager.
@@ -23,7 +22,7 @@ public interface ISynchronizedFeatureListService
     /// </remarks>
     /// <returns>Stream of modified locations.</returns>
     [Operation]
-    IAsyncEnumerable<FeatureList> ConnectAsync(IAsyncEnumerable<FeatureList> locations, CallContext context = default);
+    IAsyncEnumerable<Location> ConnectAsync(IAsyncEnumerable<Location> locations, CallContext context = default);
 
     /// <summary>
     /// Gets instances to subscribe to.

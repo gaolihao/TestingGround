@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Grpc.Core" Version="2.46.6" />
     <PackageReference Include="Protobuf.Grpc" Version="1.0.170" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
   </ItemGroup>
 
 </Project>

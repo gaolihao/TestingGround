@@ -110,29 +110,20 @@ public partial class App : Application
                 services.AddHostedService<Worker>();
                 services.AddSingleton<IMainViewModel, MainViewModel>();
                 services.AddSingleton<IHubClient, HubClient>();
-                services.AddSingleton<IInstanceManagerClientFeatureList, InstanceManagerClientFeatureList>();
+                services.AddSingleton<IInstanceManagerClient, InstanceManagerClient>();
                 
                 
-                services.AddGrpcClient<ISynchronizedFeatureListService>((sp, o) =>
+                services.AddGrpcClient<ISynchronizedScrollingService>((sp, o) =>
                 {
                     var socketConfiguration = sp.GetRequiredService<IOptions<SocketConfiguration>>().Value;
-                    var baseUrl = "https://localhost";
+                    var baseUrl = "http://localhost";
 
                     var address = baseUrl + ":" + socketConfiguration.HttpPort;
                     o.Address = new Uri(address);
                 })
-                // Call a gRPC service with an untrusted/invalid certificate, https://learn.microsoft.com/en-us/aspnet/core/grpc/troubleshoot?view=aspnetcore-8.0
-                .ConfigurePrimaryHttpMessageHandler(() =>
-                {
-                    var handler = new HttpClientHandler();
-                    handler.ServerCertificateCustomValidationCallback =
-                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-
-                    return handler;
-                })
                     //.AddPolicyHandler(RetryForeverPolicy)
                     .ConfigureChannel(ConfigureChannel)
-                    .ConfigureCodeFirstGrpcClient<ISynchronizedFeatureListService>();
+                    .ConfigureCodeFirstGrpcClient<ISynchronizedScrollingService>();
                 
 
                 // Register the background service responsible for handling the console interactions.
