@@ -43,7 +43,7 @@ public partial class App : Application
         AppHost = Host.CreateDefaultBuilder(e.Args)
             .ConfigureAppConfiguration((context, builder) =>
             {
-                builder.AddJsonFile("app.settings.json", optional: true, reloadOnChange: true)
+                builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                         .AddEnvironmentVariables();
             })
             

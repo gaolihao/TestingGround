@@ -1,6 +1,7 @@
 ﻿using Grpc.Core;
 using MyApi.Contract;
 using ProtoBuf.Grpc;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace MyApi.Services;
@@ -106,6 +107,12 @@ public class SynchronizedScrollingService : ISynchronizedScrollingService
             synchronizedScrollingRepository.InformSubscribers(processId, instanceLocation, pq);
             synchronizedScrollingRepository.InformParent(processId, instanceLocation);
         }
+    }
+
+    private void InformSubscribers()
+    {
+        //var subscriberLocationSource = synchronizedScrollingRepository.GetPathAndQueue(processId);
+        //subscriberLocationSource.Publish(pathAndQueue.LastLocation);
     }
 
     private async IAsyncEnumerable<Location> ConnectAsync(ConnectMessageHeader header, IAsyncEnumerable<Location> locations, [EnumeratorCancellation] CancellationToken ct = default)

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using MyApi.Contract;
 using Grpc.Net.Client;
 using MyApi.Services;
+using ClassLibrary;
 
 namespace MyTestingGround;
 
@@ -61,7 +62,7 @@ public partial class MainViewModel : IMainViewModel
         //var results = await GetResourceAsync();
         //username = results.Value;
         var httpClient = new HttpClient();
-        var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
+        var client = new Client("http://localhost:5232/", httpClient);
         var result = await client.UsernameAsync();
         username = result.ToString();
     }
@@ -80,7 +81,7 @@ public partial class MainViewModel : IMainViewModel
 
         var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
+        var client = new Client("http://localhost:5232/", httpClient);
         var result = await client.UsernameAsync(cancellationToken);
 
         return result.ToString();
@@ -93,12 +94,22 @@ public partial class MainViewModel : IMainViewModel
     [RelayCommand]
     private async Task GetFeaturesAsync()
     {
-        var httpClient = new HttpClient()
+        var httpClient = new HttpClient();
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost:7204/features")
         {
             Version = new Version(2, 0)
         };
-        var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
-        features = await client.FeaturesAsync();
+        
+
+        using var response = await httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+
+        var a = await response.Content.ReadAsStringAsync();
+        msg = a.ToString();
+        
+        //var client = new MyNamespace.Client("https://localhost:7204/", httpClient);
+        //features = await client.FeaturesAsync();
     }
 
     [RelayCommand]
@@ -108,7 +119,7 @@ public partial class MainViewModel : IMainViewModel
         {
             DefaultRequestVersion = new Version(2, 0)
         };
-        var client = new MyNamespace.Client("http://localhost:5232/", httpClient);
+        var client = new Client("https://localhost:7204/", httpClient);
         await client.FeatureAsync(MyProperty);
 
         // Get features
