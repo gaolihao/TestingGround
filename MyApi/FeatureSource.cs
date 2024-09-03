@@ -6,19 +6,19 @@ namespace MyApi;
 /// <summary>
 /// Holds file path information as well as the location queue.
 /// </summary>
-public class LocationSource
+public class FeatureSource
 {
-    private readonly Channel<Location> incomingLocation;
+    private readonly Channel<FeatureList> incomingLocation;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LocationSource"/> class.
+    /// Initializes a new instance of the <see cref="FeatureSource"/> class.
     /// </summary>
     /// <param name="filepath">The file path.</param>
-    public LocationSource(string filepath)
+    public FeatureSource(string filepath)
     {
         FilePath = filepath;
         var options = new BoundedChannelOptions(1) { FullMode = BoundedChannelFullMode.DropOldest };
-        incomingLocation = Channel.CreateBounded<Location>(options);
+        incomingLocation = Channel.CreateBounded<FeatureList>(options);
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ public class LocationSource
     /// <summary>
     /// Gets or sets the last location.
     /// </summary>
-    public Location LastLocation { get; set; } = new Location();
+    public FeatureList LastLocation { get; set; } = new FeatureList();
 
     /// <summary>
     /// Gets the subscribers.
@@ -40,14 +40,14 @@ public class LocationSource
     /// Publishes a location.
     /// </summary>
     /// <param name="location">The location.</param>
-    public void Publish(Location location)
+    public void Publish(FeatureList location)
         => _ = incomingLocation.Writer.TryWrite(location);
 
     /// <summary>
-    /// Receive <see cref="Location"/> data.
+    /// Receive <see cref="FeatureList"/> data.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A ValudTask.</returns>
-    public ValueTask<Location> ReadAsync(CancellationToken ct = default)
+    public ValueTask<FeatureList> ReadAsync(CancellationToken ct = default)
         => incomingLocation.Reader.ReadAsync(ct);
 }

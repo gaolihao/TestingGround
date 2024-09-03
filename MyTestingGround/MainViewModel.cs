@@ -163,7 +163,7 @@ public partial class MainViewModel : IMainViewModel
         msg += message + "\n";
     }
 
-    private async void FeatureListUpdated(Location featureList)
+    private async void FeatureListUpdated(FeatureList featureList)
     {
         features.Append((int)featureList.WeldIdFine);
     }

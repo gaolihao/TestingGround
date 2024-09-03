@@ -9,16 +9,16 @@ namespace MyApi.Services
 {
     public class InstanceManagerClient : IInstanceManagerClient, IDisposable
     {
-        private readonly ISynchronizedScrollingService client;
+        private readonly ISynchronizedFeatureService client;
         private readonly ILogger<InstanceManagerClient> logger;
         private CancellationTokenSource ctsInstanceManager;
         private volatile bool _disposed;
-        private readonly Channel<Location> locations;
+        private readonly Channel<FeatureList> locations;
         private readonly SocketConfiguration socketConfiguration;
 
         static CallOptions GetDefaultCallContext => new BaseMessageHeader().ToCallOptions();
 
-        public InstanceManagerClient(IOptions<SocketConfiguration> optionsSocketConfiguration, ISynchronizedScrollingService client, ILogger<InstanceManagerClient> logger)
+        public InstanceManagerClient(IOptions<SocketConfiguration> optionsSocketConfiguration, ISynchronizedFeatureService client, ILogger<InstanceManagerClient> logger)
         {
             this.client = client;
             this.logger = logger;
@@ -26,10 +26,10 @@ namespace MyApi.Services
             ctsInstanceManager = new();
 
             var options = new BoundedChannelOptions(1) { FullMode = BoundedChannelFullMode.DropOldest };
-            locations = System.Threading.Channels.Channel.CreateBounded<Location>(options);
+            locations = System.Threading.Channels.Channel.CreateBounded<FeatureList>(options);
         }
 
-        public void ReportLocation(Location location)
+        public void ReportLocation(FeatureList location)
         {
             if (socketConfiguration.IsDisabled)
                 return;
@@ -47,7 +47,7 @@ namespace MyApi.Services
             ctsInstanceManager = new CancellationTokenSource();
         }
 
-        public void Connect(string filename, Action<Location> locationUpdatedByServer)
+        public void Connect(string filename, Action<FeatureList> locationUpdatedByServer)
         {
             if (socketConfiguration.IsDisabled)
                 return;

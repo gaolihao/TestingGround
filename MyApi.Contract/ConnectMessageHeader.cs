@@ -8,7 +8,7 @@ using System.Net;
 /// </summary>
 /// <param name="FilePath">The file path of the caller.</param>
 /// <param name="InitialLocation">The initial location of the caller.</param>
-public record ConnectMessageHeader(string FilePath, Location InitialLocation) : BaseMessageHeader
+public record ConnectMessageHeader(string FilePath, FeatureList InitialLocation) : BaseMessageHeader
 {
     /// <summary>
     /// Initial Location Header.
@@ -26,7 +26,7 @@ public record ConnectMessageHeader(string FilePath, Location InitialLocation) : 
     /// <param name="processId">Process ID of the caller.</param>
     /// <param name="filePath">The file path of the caller.</param>
     /// <param name="initialLocation">The initial location of the caller.</param>
-    public ConnectMessageHeader(int processId, string filePath, Location initialLocation)
+    public ConnectMessageHeader(int processId, string filePath, FeatureList initialLocation)
         : this(filePath, initialLocation)
     {
         ProcessId = processId;
@@ -37,7 +37,7 @@ public record ConnectMessageHeader(string FilePath, Location InitialLocation) : 
     /// </summary>
     /// <param name="filePath">The file path of the caller.</param>
     public ConnectMessageHeader(string filePath)
-        : this(filePath, new Location())
+        : this(filePath, new FeatureList())
     {
     }
 
@@ -51,7 +51,7 @@ public record ConnectMessageHeader(string FilePath, Location InitialLocation) : 
           GetProcessId(context),
           WebUtility.UrlDecode(context.RequestHeaders.GetString(HeaderFilePath)
             ?? throw new RpcException(Status.DefaultCancelled, "filePath needs to be set")),
-          new Location(BitConverter.ToInt64(context.RequestHeaders.GetBytes(HeaderInitialLocation)
+          new FeatureList(BitConverter.ToInt64(context.RequestHeaders.GetBytes(HeaderInitialLocation)
             ?? throw new RpcException(Status.DefaultCancelled, "need initial location"))))
     {
     }
@@ -62,7 +62,7 @@ public record ConnectMessageHeader(string FilePath, Location InitialLocation) : 
     /// <param name="processId">Process ID of the caller.</param>
     /// <param name="filePath">The file path of the caller.</param>
     /// <param name="initialLocation">The initial location of the caller.</param>
-    public void Deconstruct(out int processId, out string filePath, out Location initialLocation)
+    public void Deconstruct(out int processId, out string filePath, out FeatureList initialLocation)
     {
         processId = ProcessId;
         filePath = FilePath;

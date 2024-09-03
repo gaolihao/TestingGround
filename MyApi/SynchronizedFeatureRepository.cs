@@ -6,32 +6,32 @@ using System.Collections.Concurrent;
 /// <summary>
 /// Repository containing all instance data.
 /// </summary>
-public class SynchronizedScrollingRepository
+public class SynchronizedFeatureRepository : ISynchronizedFeatureRepository
 {
-    private readonly ILogger<SynchronizedScrollingRepository> logger;
+    private readonly ILogger<SynchronizedFeatureRepository> logger;
 
-    private readonly ConcurrentDictionary<int, LocationSource> locationSources = new();
+    private readonly ConcurrentDictionary<int, FeatureSource> locationSources = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SynchronizedScrollingRepository"/> class.
+    /// Initializes a new instance of the <see cref="SynchronizedFeatureRepository"/> class.
     /// </summary>
     /// <param name="loggerFactory">The logger for this class.</param>
-    public SynchronizedScrollingRepository(ILoggerFactory loggerFactory)
+    public SynchronizedFeatureRepository(ILoggerFactory loggerFactory)
     {
-        logger = loggerFactory.CreateLogger<SynchronizedScrollingRepository>();
+        logger = loggerFactory.CreateLogger<SynchronizedFeatureRepository>();
     }
 
     /// <summary>
     /// Gets all the processes that can be connected to.
     /// </summary>
-    public IDictionary<int, LocationSource> All => locationSources;
+    public IDictionary<int, FeatureSource> All => locationSources;
 
     /// <summary>
     /// Gets a process by id.
     /// </summary>
     /// <param name="processId">Process Id.</param>
     /// <returns>Location source.</returns>
-    public LocationSource GetPathAndQueue(int processId)
+    public FeatureSource GetPathAndQueue(int processId)
         => locationSources[processId];
 
     /// <summary>
@@ -40,9 +40,9 @@ public class SynchronizedScrollingRepository
     /// <param name="processId">Process Id.</param>
     /// <param name="filePath">File path of the open document.</param>
     /// <returns>Location source.</returns>
-    public LocationSource GetPathAndQueue(int processId, string filePath)
+    public FeatureSource GetPathAndQueue(int processId, string filePath)
     {
-        return locationSources.GetOrAdd(processId, (processId) => new LocationSource(filePath));
+        return locationSources.GetOrAdd(processId, (processId) => new FeatureSource(filePath));
     }
 
     /// <summary>
@@ -75,9 +75,9 @@ public class SynchronizedScrollingRepository
     /// </summary>
     /// <param name="processId">Process id of the child process.</param>
     /// <param name="location">New location.</param>
-    internal void InformParent(int processId, Location location)
+    internal void InformParent(int processId, FeatureList location)
     {
-        LocationSource? parent = null;
+        FeatureSource? parent = null;
         foreach (var pair in locationSources)
         {
             if (pair.Value.Subscribers.Contains(processId))
@@ -103,7 +103,7 @@ public class SynchronizedScrollingRepository
     /// <param name="triggerProcessId">ID of procecess which triggered update. Can be either parent or one of subscribers.</param>
     /// <param name="location">Location to report.</param>
     /// <param name="locationSource">the location source.</param>
-    internal void InformSubscribers(int triggerProcessId, Location location, LocationSource locationSource)
+    internal void InformSubscribers(int triggerProcessId, FeatureList location, FeatureSource locationSource)
     {
         var recipients = new List<int>();
         foreach (var subscriber in locationSource.Subscribers)

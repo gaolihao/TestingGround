@@ -10,9 +10,9 @@ namespace MyApi.Controllers;
 public class FeatureController : Controller
 {
     //IHubContext<ChatHub> _hubContext;
-    ISynchronizedScrollingService synchronizedScrollingService;
+    ISynchronizedFeatureService synchronizedScrollingService;
 
-    public FeatureController(ISynchronizedScrollingService synchronizedScrollingService)
+    public FeatureController(ISynchronizedFeatureService synchronizedScrollingService)
     {
         //_hubContext = hubcontext;
         this.synchronizedScrollingService = synchronizedScrollingService;
@@ -30,7 +30,7 @@ public class FeatureController : Controller
     {
         Database.features.Add(feature);
         //_hubContext.Clients.All.SendAsync("Send", Database.features);
-        synchronizedScrollingService.
+        synchronizedScrollingService.InformSubscribers();
         return Task.FromResult<ActionResult>(Ok());
     }
 }

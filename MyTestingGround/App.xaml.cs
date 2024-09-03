@@ -113,7 +113,7 @@ public partial class App : Application
                 services.AddSingleton<IInstanceManagerClient, InstanceManagerClient>();
                 
                 
-                services.AddGrpcClient<ISynchronizedScrollingService>((sp, o) =>
+                services.AddGrpcClient<ISynchronizedFeatureService>((sp, o) =>
                 {
                     var socketConfiguration = sp.GetRequiredService<IOptions<SocketConfiguration>>().Value;
                     var baseUrl = "http://localhost";
@@ -123,7 +123,7 @@ public partial class App : Application
                 })
                     //.AddPolicyHandler(RetryForeverPolicy)
                     .ConfigureChannel(ConfigureChannel)
-                    .ConfigureCodeFirstGrpcClient<ISynchronizedScrollingService>();
+                    .ConfigureCodeFirstGrpcClient<ISynchronizedFeatureService>();
                 
 
                 // Register the background service responsible for handling the console interactions.

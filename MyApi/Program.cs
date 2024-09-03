@@ -12,6 +12,7 @@ using System.Text.Json;
 using MyApi.Services;
 using ProtoBuf.Grpc.Server;
 using MyApi;
+using MyApi.Contract;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -186,7 +187,8 @@ builder.Services.AddSignalR();
 builder.WebHost.ConfigureKestrel(SocketSetup.Execute);
 builder.Services.AddGrpc();
 builder.Services.AddCodeFirstGrpc();
-builder.Services.AddSingleton<SynchronizedScrollingRepository>();
+builder.Services.AddSingleton<SynchronizedFeatureRepository>();
+builder.Services.AddSingleton<ISynchronizedFeatureService, SynchronizedFeatureService>();
 
 var app = builder.Build();
 
@@ -234,7 +236,7 @@ await using (var scope = app.Services.CreateAsyncScope())
 }
 
 app.UseRouting();
-app.MapGrpcService<SynchronizedScrollingService>();
+app.MapGrpcService<SynchronizedFeatureService>();
 
 app.UseAuthentication();
 app.UseAuthorization();

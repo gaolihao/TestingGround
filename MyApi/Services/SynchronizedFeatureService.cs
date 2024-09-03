@@ -7,24 +7,24 @@ using System.Runtime.CompilerServices;
 namespace MyApi.Services;
 
 /// <inheritdoc/>
-public class SynchronizedScrollingService : ISynchronizedScrollingService
+public class SynchronizedFeatureService : ISynchronizedFeatureService
 {
-    private readonly SynchronizedScrollingRepository synchronizedScrollingRepository;
+    private readonly SynchronizedFeatureRepository synchronizedScrollingRepository;
     private readonly ILogger logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SynchronizedScrollingService"/> class.
+    /// Initializes a new instance of the <see cref="SynchronizedFeatureService"/> class.
     /// </summary>
     /// <param name="synchronizedScrollingRepository">Repository.</param>
     /// <param name="loggerFactory">Logger Factory.</param>
-    public SynchronizedScrollingService(SynchronizedScrollingRepository synchronizedScrollingRepository, ILoggerFactory loggerFactory)
+    public SynchronizedFeatureService(SynchronizedFeatureRepository synchronizedScrollingRepository, ILoggerFactory loggerFactory)
     {
-        logger = loggerFactory.CreateLogger<SynchronizedScrollingService>();
+        logger = loggerFactory.CreateLogger<SynchronizedFeatureService>();
         this.synchronizedScrollingRepository = synchronizedScrollingRepository;
     }
 
     /// <inheritdoc/>
-    public IAsyncEnumerable<Location> ConnectAsync(IAsyncEnumerable<Location> locations, CallContext context = default)
+    public IAsyncEnumerable<FeatureList> ConnectAsync(IAsyncEnumerable<FeatureList> locations, CallContext context = default)
         => ConnectAsync(new ConnectMessageHeader(context), locations, context.CancellationToken);
 
     /// <inheritdoc/>
@@ -75,7 +75,7 @@ public class SynchronizedScrollingService : ISynchronizedScrollingService
     private static int GetCallingProcess(CallContext context)
         => new BaseMessageHeader(context).ProcessId;
 
-    private async Task ReceiveAsync(int processId, LocationSource pq, IAsyncEnumerable<Location> locations, CancellationToken ct = default)
+    private async Task ReceiveAsync(int processId, FeatureSource pq, IAsyncEnumerable<FeatureList> locations, CancellationToken ct = default)
     {
         // Should not be catching IOException https://github.com/grpc/grpc-dotnet/issues/1452
         try
@@ -95,7 +95,7 @@ public class SynchronizedScrollingService : ISynchronizedScrollingService
         }
     }
 
-    private void ProcessNewLocation(int processId, LocationSource pq, Location instanceLocation)
+    private void ProcessNewLocation(int processId, FeatureSource pq, FeatureList instanceLocation)
     {
         if (instanceLocation.MessageType == MessageType.Unsubscribe)
         {
@@ -109,13 +109,17 @@ public class SynchronizedScrollingService : ISynchronizedScrollingService
         }
     }
 
-    private void InformSubscribers()
+    public void InformSubscribers()
     {
-        //var subscriberLocationSource = synchronizedScrollingRepository.GetPathAndQueue(processId);
-        //subscriberLocationSource.Publish(pathAndQueue.LastLocation);
+        var a = synchronizedScrollingRepository.All.Values.ToList();
+        foreach (var source in a)
+        {
+            source.Publish(new FeatureList());
+        }
+
     }
 
-    private async IAsyncEnumerable<Location> ConnectAsync(ConnectMessageHeader header, IAsyncEnumerable<Location> locations, [EnumeratorCancellation] CancellationToken ct = default)
+    private async IAsyncEnumerable<FeatureList> ConnectAsync(ConnectMessageHeader header, IAsyncEnumerable<FeatureList> locations, [EnumeratorCancellation] CancellationToken ct = default)
     {
         (var processId, var filePath, var initialLocation) = header;
 
@@ -129,7 +133,7 @@ public class SynchronizedScrollingService : ISynchronizedScrollingService
 
         while (!ct.IsCancellationRequested)
         {
-            Location loc;
+            FeatureList loc;
             try
             {
                 loc = await locationSource.ReadAsync(ct);
@@ -149,10 +153,10 @@ public class SynchronizedScrollingService : ISynchronizedScrollingService
         logger.LogInformation("Server: done!");
     }
 
-    private void RemoveProcess(int processId, LocationSource locationSource)
+    private void RemoveProcess(int processId, FeatureSource locationSource)
     {
         logger.LogInformation("Client disconnected (pid: {processId})", processId);
-        synchronizedScrollingRepository.InformSubscribers(processId, new Location { MessageType = MessageType.Unsubscribe }, locationSource);
+        synchronizedScrollingRepository.InformSubscribers(processId, new FeatureList { MessageType = MessageType.Unsubscribe }, locationSource);
         synchronizedScrollingRepository.Delete(processId);
     }
 }

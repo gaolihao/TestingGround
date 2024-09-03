@@ -5,20 +5,20 @@ using ProtoBuf;
 /// Scrollbar location.
 /// </summary>
 [ProtoContract(ImplicitFields = ImplicitFields.AllPublic)]
-public sealed record Location
+public sealed record FeatureList
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="Location"/> class.
+    /// Initializes a new instance of the <see cref="FeatureList"/> class.
     /// </summary>
-    public Location()
+    public FeatureList()
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Location"/> class.
+    /// Initializes a new instance of the <see cref="FeatureList"/> class.
     /// </summary>
     /// <param name="weldIdFine">Weld Id correlated to scroll bar location. Fractions are deterined by distance.</param>
-    public Location(long weldIdFine)
+    public FeatureList(long weldIdFine)
     {
         WeldIdFine = weldIdFine;
     }
@@ -37,7 +37,7 @@ public sealed record Location
     /// Converts long to location.
     /// </summary>
     /// <param name="weldIdFine">Fine Weld Id.</param>
-    public static implicit operator Location(long weldIdFine) => new(weldIdFine);
+    public static implicit operator FeatureList(long weldIdFine) => new(weldIdFine);
 
     /// <inheritdoc/>
     public override string ToString()
